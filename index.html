@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BizAssist AI — Demo</title>
+<meta name="description" content="Phone-friendly demo of BizAssist AI customer support chatbot.">
+<style>
+:root{--navy:#12243a;--blue:#2878f0;--bg:#f3f6fb;--card:#fff;--ink:#172538;--muted:#718096;--line:#e3eaf2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+.top{display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;padding:16px;border-radius:18px}
+.logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(140deg,#65a5ff,#2878f0);display:grid;place-items:center;font-weight:800;font-size:20px}
+.top h1{margin:0;font-size:19px}.top p{margin:3px 0 0;color:#d4e1f2;font-size:13px}
+.status{margin-left:auto;font-size:12px;color:#b7f5d1;white-space:nowrap}
+.notice{background:#fff6df;border:1px solid #f2dfad;color:#6e5314;border-radius:12px;padding:10px 12px;font-size:12px;margin:12px 0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 6px 24px #142b4610}
+.chathead{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:650}
+.messages{padding:14px;min-height:310px;max-height:52vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:11px 13px;border-radius:16px;white-space:pre-line;font-size:14px;line-height:1.45}
+.bot{align-self:flex-start;background:#f0f4fa;border:1px solid #e5ebf3;border-bottom-left-radius:5px}
+.user{align-self:flex-end;background:var(--blue);color:white;border-bottom-right-radius:5px}
+.quick{padding:0 14px 12px;display:flex;gap:7px;flex-wrap:wrap}
+.quick button,.send,.enquiry button{border:0;border-radius:11px;background:#eaf2ff;color:#185ac0;padding:9px 11px;font-weight:600;font-size:13px}
+.inputrow{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+input,textarea{font:inherit}#question{flex:1;border:1px solid var(--line);border-radius:12px;padding:11px;min-width:0;outline:none}
+#question:focus{border-color:var(--blue)}.send{background:var(--blue);color:#fff;padding:0 16px}
+.enquiry{margin-top:14px;padding:16px}.enquiry h2{font-size:17px;margin:0 0 5px}.enquiry p{font-size:13px;color:var(--muted);margin:0 0 12px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fields input,.fields textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px}
+.fields textarea{grid-column:1/-1;min-height:76px;resize:vertical}
+.enquiry button{background:var(--navy);color:#fff;margin-top:10px}
+.foot{text-align:center;color:var(--muted);font-size:12px;padding:15px}
+@media(max-width:480px){.wrap{padding:10px}.status{font-size:11px}.fields{grid-template-columns:1fr}.fields textarea{grid-column:auto}.messages{min-height:270px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">B</div>
+    <div><h1>BizAssist AI</h1><p>Business chatbot demonstration</p></div>
+    <div class="status">● Demo online</div>
+  </header>
+  <div class="notice"><strong>Demo mode:</strong> Sample property details are fictional. Messages and enquiry form are not sent to a real business or saved to a server.</div>
+  <main class="panel">
+    <div class="chathead">EstateConnect Properties · Indore</div>
+    <div class="messages" id="messages" aria-live="polite">
+      <div class="msg bot">Hello! 👋 Welcome to EstateConnect Properties. I'm the demo virtual assistant. I can answer sample property questions or help you try an enquiry.</div>
+    </div>
+    <div class="quick">
+      <button onclick="ask('Show me available properties')">Properties</button>
+      <button onclick="ask('What are the prices?')">Prices</button>
+      <button onclick="ask('Where are you located?')">Locations</button>
+      <button onclick="ask('I want to arrange a visit')">Arrange a visit</button>
+    </div>
+    <form class="inputrow" id="chatForm">
+      <input id="question" placeholder="Type a customer question…" autocomplete="off" aria-label="Your question">
+      <button class="send" type="submit">Send</button>
+    </form>
+  </main>
+  <section class="panel enquiry">
+    <h2>Try a customer enquiry form</h2>
+    <p>Use fictional details. This demo only shows a confirmation on this device.</p>
+    <form id="leadForm">
+      <div class="fields">
+        <input id="name" placeholder="Name (demo)" required>
+        <input id="phone" placeholder="Phone (demo)" inputmode="tel" required>
+        <input id="budget" placeholder="Budget (e.g. ₹50 lakh)">
+        <input id="interest" placeholder="Interested in (flat / plot)">
+        <textarea id="notes" placeholder="Preferred area or other details"></textarea>
+      </div>
+      <button type="submit">Preview enquiry</button>
+    </form>
+  </section>
+  <div class="foot">BizAssist AI · Prototype for demonstration purposes</div>
+</div>
+<script>
+const samples=[
+ {name:"2 BHK Apartment",area:"Vijay Nagar, Indore",price:"₹55 lakh"},
+ {name:"3 BHK Apartment",area:"Indore (sample)",price:"₹78 lakh"},
+ {name:"Residential Plot",area:"Indore (sample)",price:"₹35 lakh"}
+];
+function add(text,who){const d=document.createElement('div');d.className='msg '+who;d.textContent=text;document.getElementById('messages').appendChild(d);document.getElementById('messages').scrollTop=999999;}
+function answer(q){
+ const s=q.toLowerCase();
+ if(/price|cost|budget|rate/.test(s)) return "Sample demo prices:\n• 2 BHK in Vijay Nagar — ₹55 lakh\n• 3 BHK apartment — ₹78 lakh\n• Residential plot — ₹35 lakh\nThese are fictional. A real chatbot would use verified business information.";
+ if(/property|properties|flat|house|available|listing/.test(s)) return "Here are our fictional sample listings:\n"+samples.map(x=>"• "+x.name+" — "+x.area+" — "+x.price).join("\n")+"\nWhich one would you like to enquire about?";
+ if(/location|where|area|vijay nagar/.test(s)) return "The demo's sample 2 BHK is in Vijay Nagar, Indore. Other listing locations are placeholders. The real business must confirm exact addresses.";
+ if(/visit|book|appointment|meet/.test(s)) return "I can take a visit enquiry. Please use the enquiry form below and mention the property and preferred time. This demo does not send or confirm appointments.";
+ if(/contact|agent|call|human|person/.test(s)) return "Use the enquiry form below to preview a callback request. In a live installation, the form would be connected to the business owner's notification system.";
+ if(/hi|hello|hey/.test(s)) return "Hello! Are you interested in an apartment, house, or residential plot?";
+ if(/thank/.test(s)) return "You're welcome! Ask me about sample properties, prices, locations, or a visit enquiry.";
+ return "I don't have verified information about that in this demo, so I won't guess. A real deployment can direct unanswered questions to the business team.";
+}
+function ask(q){if(!q.trim())return;add(q,'user');setTimeout(()=>add(answer(q),'bot'),150);}
+document.getElementById('chatForm').addEventListener('submit',e=>{e.preventDefault();const i=document.getElementById('question');ask(i.value);i.value='';i.focus();});
+document.getElementById('leadForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('name').value.trim();const phone=document.getElementById('phone').value.trim();add("Demo enquiry preview:\nName: "+name+"\nPhone: "+phone+"\nBudget: "+document.getElementById('budget').value+"\nInterest: "+document.getElementById('interest').value+"\nDetails: "+document.getElementById('notes').value+"\n\nThis was not sent or stored. In the live version, the business would receive the enquiry after consent and secure setup.",'bot');});
+</script>
+</body>
+</html>
